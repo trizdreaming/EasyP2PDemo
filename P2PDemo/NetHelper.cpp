@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Config.h"
 #include "NetHelper.h"
 
@@ -18,7 +18,7 @@ NetHelper::~NetHelper()
 
 bool NetHelper::Initialize()
 {
-	/// Socket �ʱ�ȭ 
+	/// Socket 초기화 
 	WSADATA wsa ;
 	if ( WSAStartup(MAKEWORD(2, 2), &wsa) != 0 )
 		return false ;
@@ -68,7 +68,7 @@ bool NetHelper::DoHandShake()
 			retval = sendto(m_Socket, ioBuf, strlen(ioBuf), 0, (SOCKADDR*)&m_PeerAddrIn, sizeof(m_PeerAddrIn)) ;
 			if (retval == SOCKET_ERROR)
 			{
-				MessageBox(NULL, L"ERROR: sendto(SUCCESS)", L"ERROR", MB_OK) ;
+				MessageBox(NULL, L"ERROR: send to(SUCCESS)", L"ERROR", MB_OK) ;
 				return false ;
 			}
 
@@ -89,7 +89,7 @@ bool NetHelper::DoHandShake()
 		int retval = sendto(m_Socket, ioBuf, strlen(ioBuf), 0, (SOCKADDR*)&serveraddr, sizeof(serveraddr)) ;
 		if (retval == SOCKET_ERROR)
 		{
-			MessageBox(NULL, L"ERROR: first sendto(CONNECT)", L"ERROR", MB_OK) ;
+			MessageBox(NULL, L"ERROR: first send to(CONNECT)", L"ERROR", MB_OK) ;
 			return false ;
 		}
 

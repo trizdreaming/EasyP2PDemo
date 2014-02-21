@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Player.h"
 #include "Config.h"
 #include "NetHelper.h"
@@ -68,7 +68,7 @@ void Player::UpdateStateByPeerInput(int frameNum)
 		m_PrevKeyState[i] = m_NowKeyState[i];
 	}
 
-	/// P2P µ¥ÀÌÅÍ ¹Ş¾Æ¼­ »óÅÂ ¾÷µ¥ÀÌÆ®
+	/// P2P ë°ì´í„° ë°›ì•„ì„œ ìƒíƒœ ì—…ë°ì´íŠ¸
 	PacketKeyStatus recvPkt ;
 	GNetHelper->RecvKeyStatus(recvPkt) ;
 	
@@ -76,7 +76,7 @@ void Player::UpdateStateByPeerInput(int frameNum)
 
 	if ( recvPkt.mSequence != frameNum )
 	{
-		/// ¿©±â °É¸®¸é ÇÁ·¹ÀÓ ºø³ª°£ °ÍÀÌ´Ù..
+		/// ì—¬ê¸° ê±¸ë¦¬ë©´ í”„ë ˆì„ ë¹—ë‚˜ê°„ ê²ƒì´ë‹¤..
 		assert(false) ;
 	}
 
@@ -103,7 +103,7 @@ void Player::UpdateStateByKeyInput(int frameNum)
 	}
 
 
-	/// P2P µ¥ÀÌÅÍ º¸³½ ÈÄ¿¡ ¾÷µ¥ÀÌÆ®
+	/// P2P ë°ì´í„° ë³´ë‚¸ í›„ì— ì—…ë°ì´íŠ¸
 	PacketKeyStatus sendPkt ;
 	sendPkt.mSequence = frameNum ;
 	memcpy_s(sendPkt.mKeyStatus, MAX_KEY_TYPE, m_NowKeyState, MAX_KEY_TYPE) ;

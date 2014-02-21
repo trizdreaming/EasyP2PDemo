@@ -1,4 +1,4 @@
-// P2PDemo.cpp : Defines the entry point for the application.
+﻿// P2PDemo.cpp : Defines the entry point for the application.
 //
 
 #include "stdafx.h"
@@ -12,12 +12,13 @@
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib,"ws2_32.lib")
 
-
 HANDLE g_hTimer = NULL;
 BOOL InitializeTimer();
 
-
-
+//////////////////////////////////////////////////////////////////////////
+// https://github.com/LeeInJae/meteor/blob/master/src/Meteor/MainWindow.h
+// https://github.com/LeeInJae/meteor/blob/master/src/Meteor/MainWindow.cpp 참조
+//////////////////////////////////////////////////////////////////////////
 class MainWindow : public BaseWindow<MainWindow>
 {
 	Scene   m_scene;
@@ -43,9 +44,18 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 	strtok_s(cmdLine, seps, &serverIpAddr) ;
 
 	if ( strlen(serverIpAddr) > 0 )
-	{
-		/// ��� ���� �ּҰ� ������ Ŭ�� ���
+	{	
+		/// 대상 서버 주소가 있으면 클라 모드
 		serverMode = false ;
+
+		//////////////////////////////////////////////////////////////////////////
+		// 커맨드 창에서 입력 할 경우 앞에 스페이스 바 때문에 공백 하나 더 포함 됨
+		// 그 공백을 제거 하기 위해서 첫 칸이 공백인지 확인해서 memmove() 실행
+		//////////////////////////////////////////////////////////////////////////
+		if ( ' ' == serverIpAddr[0])
+		{
+			memmove(serverIpAddr, serverIpAddr+1, strlen(serverIpAddr) - 1) ;
+		}
 	}
 
 	GNetHelper = new NetHelper(serverMode, serverIpAddr) ;

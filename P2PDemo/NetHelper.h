@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <winsock2.h>
 #include "Config.h"
@@ -12,7 +12,7 @@ public:
 
 	bool Initialize() ;
 
-	/// 2 ÄÄÇ»ÅÍ°£ Åë½Å È®ÀÎ
+	/// 2 ì»´í“¨í„°ê°„ í†µì‹  í™•ì¸
 	bool DoHandShake() ;
 
 	bool IsPeerLinked() const { return m_IsPeerLinked ; }

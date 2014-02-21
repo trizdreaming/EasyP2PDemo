@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Player.h"
 #include "P2PDemo.h"
 #include "Scene.h"
@@ -26,10 +26,10 @@ void Scene::Render(HWND hwnd)
 
 	assert(m_pRenderTarget != NULL);
 
-	/// ³ª´Â Å° ÀÔ·ÂÀ» ±â¹İÀ¸·Î ¾÷µ¥ÀÌÆ®
+	/// ë‚˜ëŠ” í‚¤ ì…ë ¥ì„ ê¸°ë°˜ìœ¼ë¡œ ì—…ë°ì´íŠ¸
 	m_MyPlayer.UpdateStateByKeyInput(m_CurrentFrame) ;
 
-	/// »ó´ë´Â ³×Æ®¿÷ ÀÔ·ÂÀ» ±â¹İÀ¸·Î ¾÷µ¥ÀÌÆ®
+	/// ìƒëŒ€ëŠ” ë„¤íŠ¸ì› ì…ë ¥ì„ ê¸°ë°˜ìœ¼ë¡œ ì—…ë°ì´íŠ¸
 	m_PeerPlayer.UpdateStateByPeerInput(m_CurrentFrame) ;
 
 
@@ -115,7 +115,7 @@ void Scene::RenderScene()
 		return ;
 	}
 
-	/// ¾Æ·¡´Â handshake (link) µÇ¾úÀ»¶§ºÎÅÍ ·»´õ¸µ ÇÒ °Í
+	/// ì•„ë˜ëŠ” handshake (link) ë˜ì—ˆì„ë•Œë¶€í„° ë Œë”ë§ í•  ê²ƒ
 
 	{
 		D2D_POINT_2F pos ;
