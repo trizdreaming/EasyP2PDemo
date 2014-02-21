@@ -43,6 +43,10 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 	bool serverMode = true ;
 	strtok_s(cmdLine, seps, &serverIpAddr) ;
 
+	AllocConsole();
+	FILE* pFile; 
+	freopen_s(&pFile, "CONOUT$", "wb", stdout);
+
 	if ( strlen(serverIpAddr) > 0 )
 	{	
 		/// 대상 서버 주소가 있으면 클라 모드
@@ -54,8 +58,16 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 		//////////////////////////////////////////////////////////////////////////
 		if ( ' ' == serverIpAddr[0])
 		{
-			memmove(serverIpAddr, serverIpAddr+1, strlen(serverIpAddr) - 1) ;
+			printf_s("[%s] Delete first character \n", serverIpAddr);
+			memmove(serverIpAddr, serverIpAddr+1, strlen(serverIpAddr)-1) ;
+			serverIpAddr[strlen(serverIpAddr)-1] = '\0';
 		}
+
+		printf_s("Client Mode - Target IP : [%s] \n", serverIpAddr);
+	}
+	else
+	{
+		printf_s("Server Mode - Target IP : [%s] \n", serverIpAddr);
 	}
 
 	GNetHelper = new NetHelper(serverMode, serverIpAddr) ;

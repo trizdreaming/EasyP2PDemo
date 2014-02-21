@@ -6,6 +6,11 @@ template <class DERIVED_TYPE>
 class BaseWindow
 {
 public:
+	//////////////////////////////////////////////////////////////////////////
+	// https://github.com/trizdreaming/oldboy/blob/master/oldboy/oldboy/RMmainLoop.h 참조
+	//
+	// 윈도우 메시지 핸들링을 위한 콜백함수는 static (정적) 함수
+	//////////////////////////////////////////////////////////////////////////
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		DERIVED_TYPE *pThis = NULL;
