@@ -20,11 +20,12 @@ BOOL InitializeTimer();
 // https://github.com/LeeInJae/meteor/blob/master/src/Meteor/MainWindow.cpp 참조
 //////////////////////////////////////////////////////////////////////////
 class MainWindow : public BaseWindow<MainWindow>
+// 템플릿으로 구현 되어 있는 BaseWindow를 상속 받아서 MainWindow 구현
 {
 	Scene   m_scene;
 
 public:
-
+	// 아래 두 개는 순수 가상 함수였으므로 반드시 구현 해야 됨
 	PCWSTR  ClassName() const { return L"P2P Demo"; }
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
@@ -34,6 +35,13 @@ const WCHAR WINDOW_NAME[] = L"P2P Test";
 
 INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 {
+	//////////////////////////////////////////////////////////////////////////
+	// https://github.com/trizdreaming/oldboy/wiki/3주차-학습 참조
+	//
+	// COM 호출 순서 참고할 것
+	//////////////////////////////////////////////////////////////////////////
+
+	// // COM 라이브러리 호출
 	if (FAILED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
 		return 0;
 
@@ -82,6 +90,7 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 	if (!InitializeTimer())
 	{
 		CoUninitialize();
+		// COM 사용 종료
 		return 0;
 	}
 
@@ -116,6 +125,7 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 
 	CloseHandle(g_hTimer);
 	CoUninitialize();
+	// COM 사용 종료
 
 
 	delete GNetHelper ;
