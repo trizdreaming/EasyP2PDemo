@@ -41,19 +41,33 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 	// COM 호출 순서 참고할 것
 	//////////////////////////////////////////////////////////////////////////
 
-	// // COM 라이브러리 호출
+	// COM 라이브러리 호출
 	if (FAILED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
 		return 0;
 
 	char* cmdLine = GetCommandLineA() ;
+	//////////////////////////////////////////////////////////////////////////
+	// http://msdn.microsoft.com/en-us/library/windows/desktop/ms683156(v=vs.85).aspx 참조
+	//
+	// CreateProcess( ,xxx, ); <- 이렇게 호출한 경우 command line을 얻어오기 위해서는 GetCommandLine()을 사용
+	// WinMain()으로 들어오는 lpCmdLine을 통해서 접근을 하게 되면 마지막 인자만 얻을 수 있음
+	//////////////////////////////////////////////////////////////////////////
+
 	char seps[]   = " ,\t\n" ;
 	char* serverIpAddr = NULL ;
 	bool serverMode = true ;
-	strtok_s(cmdLine, seps, &serverIpAddr) ;
 
-	AllocConsole();
-	FILE* pFile; 
-	freopen_s(&pFile, "CONOUT$", "wb", stdout);
+	strtok_s(cmdLine, seps, &serverIpAddr) ;
+	//////////////////////////////////////////////////////////////////////////
+	// 문자열 분리 함수
+	// http://mongyang.tistory.com/76
+	// http://harmonize84.tistory.com/112 참조
+	//////////////////////////////////////////////////////////////////////////
+
+	// 콘솔 출력용
+	// AllocConsole();
+	// FILE* pFile; 
+	// freopen_s(&pFile, "CONOUT$", "wb", stdout);
 
 	if ( strlen(serverIpAddr) > 0 )
 	{	
@@ -71,11 +85,11 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 			serverIpAddr[strlen(serverIpAddr)-1] = '\0';
 		}
 
-		printf_s("Client Mode - Target IP : [%s] \n", serverIpAddr);
+		// printf_s("Client Mode - Target IP : [%s] \n", serverIpAddr);
 	}
 	else
 	{
-		printf_s("Server Mode - Target IP : [%s] \n", serverIpAddr);
+		// printf_s("Server Mode - Target IP : [%s] \n", serverIpAddr);
 	}
 
 	GNetHelper = new NetHelper(serverMode, serverIpAddr) ;
@@ -106,22 +120,44 @@ INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, INT nCmdShow)
 	// Run the message loop.
 
 	MSG msg = { };
+	//////////////////////////////////////////////////////////////////////////
+	//	typedef struct tagMSG {
+	//		HWND        hwnd;
+	//		UINT        message;
+	//		WPARAM      wParam;
+	//		LPARAM      lParam;
+	//		DWORD       time;
+	//		POINT       pt;
+	//	#ifdef _MAC
+	//		DWORD       lPrivate;
+	//	#endif
+	//	} MSG, *PMSG, NEAR *NPMSG, FAR *LPMSG;
+
+
 	while (msg.message != WM_QUIT)
 	{
+		// 메세지가 들어오면 처리
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 			continue;
 		}
+
 		// Wait until the timer expires or any message is posted.
-		if (MsgWaitForMultipleObjects(1, &g_hTimer, FALSE, INFINITE, QS_ALLINPUT) 
-			== WAIT_OBJECT_0)
+		//
+		// http://process3.blog.me/20032377719 참조
+
+		// 메세지가 안 들어와도 일정 시간마다 발생하는 타이머 이벤트를 받아서 화면 갱신
+		if (MsgWaitForMultipleObjects(1, &g_hTimer, FALSE, INFINITE, QS_ALLINPUT) == WAIT_OBJECT_0)
 		{
 			InvalidateRect(win.Window(), NULL, FALSE);
+			//////////////////////////////////////////////////////////////////////////
+			// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145002(v=vs.85).aspx
+			// http://blog.naver.com/pok_jadan/186208331 참조
+			//////////////////////////////////////////////////////////////////////////
 		}
 	}
-
 
 	CloseHandle(g_hTimer);
 	CoUninitialize();
@@ -154,6 +190,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYDOWN:
 		
+		// handshaked 플래그로 동일 프레임 중복 통신 시도 방지
 		if ( wParam == VK_RETURN && !handshaked )
 		{
 			handshaked = true ;
@@ -167,6 +204,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_PAINT:
 	case WM_DISPLAYCHANGE:
+		//////////////////////////////////////////////////////////////////////////
+		// {}로 한 뎁스 생성 - 스택을 이용해서 PAINTSTRUCT 생명주기 관리
+		//////////////////////////////////////////////////////////////////////////
 		{
 			PAINTSTRUCT ps;
 			BeginPaint(m_hwnd, &ps);
@@ -195,6 +235,11 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 BOOL InitializeTimer()
 {
+	//////////////////////////////////////////////////////////////////////////
+	// https://github.com/zrma/EasyGameServer/blob/master/EasyServer/EasyServer/EasyServer.cpp 참조
+	//
+	// ClientHandlingThread() 함수 내부의 CreateWaitableTimer 관련 주석 참고할 것
+	//////////////////////////////////////////////////////////////////////////
 	g_hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
 	if (g_hTimer == NULL)
 	{
