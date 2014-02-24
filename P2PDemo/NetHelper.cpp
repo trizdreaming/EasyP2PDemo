@@ -19,10 +19,12 @@ NetHelper::~NetHelper()
 bool NetHelper::Initialize()
 {
 	/// Socket 초기화 
+	// https://github.com/zrma/EasyGameServer/blob/master/EasyServer/EasyServer/EasyServer.cpp 참고
 	WSADATA wsa ;
 	if ( WSAStartup(MAKEWORD(2, 2), &wsa) != 0 )
 		return false ;
 
+	// SOCK_DGRAM : UDP
 	m_Socket = socket(AF_INET, SOCK_DGRAM, 0) ;
 	if (m_Socket == INVALID_SOCKET)
 		return false ;
