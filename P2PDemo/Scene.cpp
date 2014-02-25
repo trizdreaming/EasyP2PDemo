@@ -7,6 +7,10 @@
 
 HRESULT Scene::Initialize()
 {
+	//////////////////////////////////////////////////////////////////////////
+	// https://github.com/trizdreaming/oldboy/blob/master/oldboy/oldboy/RMrender.cpp 참고
+	//////////////////////////////////////////////////////////////////////////
+
 	return D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pFactory) ;
 }
 
@@ -85,6 +89,13 @@ HRESULT Scene::CreateDeviceDependentResources()
 	if ( hr < 0 )
 		return -1 ;
 
+	//////////////////////////////////////////////////////////////////////////
+	// https://github.com/trizdreaming/oldboy/blob/2cb5c40b1aca6a14fc7c610b4950fd458d0a3229/oldboy/oldboy/RMlabelManager.cpp
+	// https://github.com/trizdreaming/oldboy/blob/master/oldboy/oldboy/RMlabel.cpp
+	// http://blog.naver.com/khk6435/50132700788 참조
+	//
+	// 텍스트를 출력하기 위함
+	//////////////////////////////////////////////////////////////////////////
 	hr = DWriteCreateFactory( DWRITE_FACTORY_TYPE_SHARED, __uuidof(m_DWriteFactory), reinterpret_cast<IUnknown**>(&m_DWriteFactory) ) ;
 
 	if ( hr < 0 )
@@ -123,6 +134,7 @@ void Scene::RenderScene()
 		pos.y = m_MyPlayer.GetPosition().y + (WINDOW_HEIGHT / 2.f) ;
 		D2D1_ELLIPSE player = D2D1::Ellipse( pos, 30, 30) ;
 		m_pRenderTarget->DrawEllipse(player, m_pStroke) ;
+		// 내 것은 원으로 그리기
 	}
 
 	{
@@ -131,9 +143,8 @@ void Scene::RenderScene()
 		pos.y = m_PeerPlayer.GetPosition().y + (WINDOW_HEIGHT / 2.f) ;
 		D2D1_RECT_F rect = D2D1::Rect(pos.x-20, pos.y-20, pos.x+20, pos.y+20) ;
 		m_pRenderTarget->DrawRectangle(&rect, m_pStroke) ;
+		// 상대방은 사각형으로 그리기
 	}
-
-
 
 	++m_CurrentFrame ;
 
@@ -141,9 +152,6 @@ void Scene::RenderScene()
 	m_pRenderTarget->DrawTextW(m_StringOut, wcslen(m_StringOut), m_TextFormat,
 		D2D1::RectF(0,0,WINDOW_WIDTH,WINDOW_HEIGHT), m_pStroke ) ;
 }
-
-
-
 
 void Scene::DiscardDeviceDependentResources()
 {
