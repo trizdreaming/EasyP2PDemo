@@ -42,39 +42,60 @@ bool NetHelper::DoHandShake()
 	serveraddr.sin_family = AF_INET ;
 	serveraddr.sin_port = htons(SERVER_PORT_NUM) ;
 
+	// 서버일 때
 	if (m_IsServerMode)
 	{
-
 		BOOL on = TRUE ;
 		int retval = setsockopt(m_Socket, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) ;
+		//////////////////////////////////////////////////////////////////////////
+		// https://github.com/zrma/EasyGameServer/blob/master/EasyServer/EasyServer/EasyServer.cpp 관련 주석 참고
+		//////////////////////////////////////////////////////////////////////////
+
 		if (retval == SOCKET_ERROR)
 			return false ;
 	
 		serveraddr.sin_addr.s_addr = htonl(INADDR_ANY) ;
+		// 이것도 관련 주석 참고 할 것
+
 		retval = bind(m_Socket, (SOCKADDR*)&serveraddr, sizeof(serveraddr)) ;
+		// (IP) 주소값 할당
+
 		if (retval == SOCKET_ERROR)
 			return false ;
 
-
 		m_PeerAddrLen = sizeof(m_PeerAddrIn) ;
+
+		//////////////////////////////////////////////////////////////////////////
+		// http://mintnlatte.tistory.com/241 참고
+		//
+		// sendto(), recvfrom()은 UDP에서 사용. 주소를 명시 할 수 있다
+		//////////////////////////////////////////////////////////////////////////
 		retval = recvfrom(m_Socket, ioBuf, BUF_SIZE, 0, (SOCKADDR*)&m_PeerAddrIn, &m_PeerAddrLen) ;
+		// 1. 데이터 받기
+
 		if (retval == SOCKET_ERROR)
 		{
 			MessageBox(NULL, L"ERROR: first recvfrom()", L"ERROR", MB_OK) ;
 			return false ;
 		}
 
+		// 2. CONNECT 라는 것을 받으면
 		if (!strncmp(ioBuf, "CONNECT", 7))
 		{
 			sprintf_s(ioBuf, "SUCCESS") ;
+			// 3. SUCCESS 라고 보내기
+
 			retval = sendto(m_Socket, ioBuf, strlen(ioBuf), 0, (SOCKADDR*)&m_PeerAddrIn, sizeof(m_PeerAddrIn)) ;
 			if (retval == SOCKET_ERROR)
 			{
-				MessageBox(NULL, L"ERROR: send to(SUCCESS)", L"ERROR", MB_OK) ;
+				MessageBox(NULL, L"ERROR: sendto(SUCCESS)", L"ERROR", MB_OK) ;
 				return false ;
 			}
 
 			m_IsPeerLinked = true ;
+
+			//////////////////////////////////////////////////////////////////////////
+			// 1 -> 2 -> 3 악수(핸드쉐이크) 성공!
 		}
 		else
 		{
@@ -83,19 +104,23 @@ bool NetHelper::DoHandShake()
 		}
 
 	}
+	// 클라일 때
 	else
 	{
 		serveraddr.sin_addr.s_addr = inet_addr(m_TargetAddr) ;
 
+		// 1. CONNECT라고 보냄
 		sprintf_s(ioBuf, "CONNECT");
 		int retval = sendto(m_Socket, ioBuf, strlen(ioBuf), 0, (SOCKADDR*)&serveraddr, sizeof(serveraddr)) ;
 		if (retval == SOCKET_ERROR)
 		{
-			MessageBox(NULL, L"ERROR: first send to(CONNECT)", L"ERROR", MB_OK) ;
+			MessageBox(NULL, L"ERROR: first sendto(CONNECT)", L"ERROR", MB_OK) ;
 			return false ;
 		}
 
 		m_PeerAddrLen = sizeof(m_PeerAddrIn) ;
+
+		// 2. 데이터 받기
 		retval = recvfrom(m_Socket, ioBuf, BUF_SIZE, 0, (SOCKADDR*)&m_PeerAddrIn, &m_PeerAddrLen) ;
 		if (retval == SOCKET_ERROR)
 		{
@@ -103,10 +128,15 @@ bool NetHelper::DoHandShake()
 			return false ;
 		}
 
+		// 3. SUCCESS 라고 받기
 		if (!strncmp(ioBuf, "SUCCESS", 7))
 		{
 			m_IsPeerLinked = true ;
 		}
+
+		//////////////////////////////////////////////////////////////////////////
+		// 1 -> 2 -> 3 악수 성공!
+
 		else
 		{
 			MessageBox(NULL, L"ERROR: INVALID SERVER!!", L"ERROR", MB_OK) ;
@@ -117,10 +147,8 @@ bool NetHelper::DoHandShake()
 	return true ;
 }
 
-
 bool NetHelper::SendKeyStatus(const PacketKeyStatus& sendKeys)
 {
-
 	/// SEND
 	int retval = sendto(m_Socket, (char*)&sendKeys, sizeof(PacketKeyStatus), 0, (SOCKADDR*)&m_PeerAddrIn, sizeof(m_PeerAddrIn)) ;
 	if (retval == SOCKET_ERROR)

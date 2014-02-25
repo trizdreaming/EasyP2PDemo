@@ -189,8 +189,9 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_KEYDOWN:
-		
-		// handshaked 플래그로 동일 프레임 중복 통신 시도 방지
+		// 키가 눌렸을 때 핸들링
+
+		// 엔터 눌렀을 때, 연결이 맺어져 있지 않을 경우 연결(악수) 시도
 		if ( wParam == VK_RETURN && !handshaked )
 		{
 			handshaked = true ;
