@@ -102,7 +102,6 @@ void Player::UpdateStateByKeyInput(int frameNum)
 		}
 	}
 
-
 	/// P2P 데이터 보낸 후에 업데이트
 	PacketKeyStatus sendPkt ;
 	sendPkt.mSequence = frameNum ;
