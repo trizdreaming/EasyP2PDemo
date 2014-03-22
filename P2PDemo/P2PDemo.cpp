@@ -218,8 +218,8 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SIZE:
 		{
-			int x = (int)(short)LOWORD(lParam);
-			int y = (int)(short)HIWORD(lParam);
+			int x = (int)LOWORD(lParam);
+			int y = (int)HIWORD(lParam);
 			m_scene.Resize(x,y);
 			InvalidateRect(m_hwnd, NULL, FALSE);
 		}

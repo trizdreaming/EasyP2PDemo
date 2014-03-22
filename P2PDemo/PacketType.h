@@ -14,15 +14,15 @@ enum PacketTypes
 
 struct PacketTest
 {
-	PacketTest() : mType(PKT_TEST), mSequence(-1)
+	PacketTest(): mType( PKT_TEST ), mSequence( -1 )
 	{
-		memset(mPayLoad, 0, MAX_PAYLOAD) ;
+		memset( mPayLoad, 0, MAX_PAYLOAD );
 	}
 
-	short	mType ;
-	int		mSequence ;
-	char	mPayLoad[MAX_PAYLOAD] ;
-} ;
+		short	mType;
+		int		mSequence;
+		char	mPayLoad[MAX_PAYLOAD];
+};
 
 struct PacketKeyStatus
 {
